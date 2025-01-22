@@ -5,7 +5,7 @@ const connection = require("../data/db")
 // CONTROLLERS
 // Index
 const index = (req, res) => {
-    const sql = "SELECT * FROM posts";
+    const sql = "SELECT * FROM `posts`";
     connection.query(sql, (err, posts) => {
         if(err) return res.status(500).json({error: "Internal Server error"});
         res.json({status: "success", data: posts});
@@ -20,7 +20,12 @@ const show = (req, res) => {
 
 // Destroy
 const destroy = (req, res) => {
-
+    const id = req.params.id;
+    const sql = "DELETE FROM `posts` WHERE id = ?";
+    connection.query(sql, [id], (err) => {
+        if (err) return res.status(500).json({error: "Internal Server error"});
+        res.sendStatus(204);
+    })
 }
     
 

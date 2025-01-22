@@ -1,5 +1,3 @@
-// IMPORTED DATA
-const posts = require("../data/db");
 const connection = require("../data/db")
 
 // CONTROLLERS
@@ -16,13 +14,30 @@ const index = (req, res) => {
 const show = (req, res) => {
     const id = req.params.id;
     const sql = "SELECT * FROM `posts` WHERE id = ?";
+    const tagsSql = `
+    SELECT tags.* 
+    FROM tags 
+    JOIN post_tag 
+    ON tags.id = post_tag.tag_id
+    JOIN posts
+    ON post_tag.post_id = posts.id
+    WHERE posts.id = ?
+    `
+
     connection.query(sql, [id], (err, posts) => {
         if (err) {
             return res.status(500).json({ error: "Internal Server error" });
-        } else if (posts.lenght === 0) {
+        } else if (posts.length === 0) {
             return res.status(404).json({ error: "Post not found" })
         } else {
-            res.json({ status: "success", data: posts[0] });
+            connection.query(tagsSql, [id], (err, tags) => {
+                if (err) return res.status(500).json({ error: "Internal Server error" });
+                const postDetails = {
+                    ...posts[0],
+                    tags
+                }
+                return res.json({ status: "success", data: postDetails });
+            })
         }
     })
 }

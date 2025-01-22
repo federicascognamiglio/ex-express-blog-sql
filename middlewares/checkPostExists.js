@@ -1,6 +1,3 @@
-// Data
-const posts = require("../data/db")
-
 const checkPostExists = (req, res, next) => {
     next()
     // const findId = posts.find(curPost => curPost.id === parseInt(req.params.id));
